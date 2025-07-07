@@ -1,0 +1,9 @@
+# Large file for cache testing - repeat content to create substantial size
+This is a large file used for testing Cloudflare cache behavior with different file sizes.
+This content is repeated many times to create a file large enough for meaningful cache testing.
+
+Content repeated below:
+
+This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing. This line is repeated to create a large file for cache testing.
+
+End of large file content for cache testing. 
