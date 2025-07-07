@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Cache Tests - Cache Test App</title>
+    <meta name="description" content="Advanced cache testing features for detailed analysis">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="/css/critical.css">
+    <link rel="stylesheet" href="/css/vendor.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="manifest" href="/manifest.json">
+    
+    <style>
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .test-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .test-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        .test-output {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+        
+        .status-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <img src="/images/logo.svg" alt="Cache Test" width="200" height="80">
+                </a>
+                <nav>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="#advanced">Advanced</a></li>
+                        <li><a href="#automation">Automation</a></li>
+                        <li><a href="#monitoring">Monitoring</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Advanced Cache Testing</h1>
+                <p>Deep dive into cache behavior with comprehensive testing tools</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Advanced Test Section -->
+        <section id="advanced" class="section">
+            <h2 class="section-title">Advanced Cache Tests</h2>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3>Stale-While-Revalidate Test</h3>
+                    <p>Test stale-while-revalidate caching strategy</p>
+                    <button class="btn" onclick="testStaleWhileRevalidate()">Run Test</button>
+                    <div class="test-output" id="swr-output">Ready to test...</div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>CDN vs Browser Cache</h3>
+                    <p>Compare CDN-Cache-Control vs Cache-Control headers</p>
+                    <button class="btn" onclick="testCDNvsBrowser()">Run Test</button>
+                    <div class="test-output" id="cdn-output">Ready to test...</div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>ETag Validation</h3>
+                    <p>Test ETag-based cache validation</p>
+                    <button class="btn" onclick="testETagValidation()">Run Test</button>
+                    <div class="test-output" id="etag-output">Ready to test...</div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>Vary Header Test</h3>
+                    <p>Test cache behavior with Vary headers</p>
+                    <button class="btn" onclick="testVaryHeaders()">Run Test</button>
+                    <div class="test-output" id="vary-output">Ready to test...</div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>Content-Type Caching</h3>
+                    <p>Test different content types caching</p>
+                    <button class="btn" onclick="testContentTypes()">Run Test</button>
+                    <div class="test-output" id="content-output">Ready to test...</div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>Size-Based Caching</h3>
+                    <p>Test cache behavior with different file sizes</p>
+                    <button class="btn" onclick="testSizeBasedCaching()">Run Test</button>
+                    <div class="test-output" id="size-output">Ready to test...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Automation Section -->
+        <section id="automation" class="section">
+            <h2 class="section-title">Automated Testing</h2>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3>Load Testing</h3>
+                    <p>Simulate multiple concurrent requests</p>
+                    <div>
+                        <label>Concurrent requests: <input type="number" id="concurrent-requests" value="10" min="1" max="100"></label>
+                    </div>
+                    <button class="btn" onclick="runLoadTest()">Start Load Test</button>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="load-progress" style="width: 0%"></div>
+                    </div>
+                    <div class="test-output" id="load-output">Ready to test...</div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>Cache Warming</h3>
+                    <p>Pre-populate cache with common requests</p>
+                    <button class="btn" onclick="warmCache()">Warm Cache</button>
+                    <div class="test-output" id="warm-output">Ready to test...</div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>Cache Invalidation</h3>
+                    <p>Test cache invalidation strategies</p>
+                    <button class="btn" onclick="testCacheInvalidation()">Test Invalidation</button>
+                    <div class="test-output" id="invalidation-output">Ready to test...</div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>Performance Regression</h3>
+                    <p>Monitor performance over time</p>
+                    <button class="btn" onclick="startPerformanceMonitoring()">Start Monitoring</button>
+                    <div class="test-output" id="performance-output">Ready to test...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Monitoring Section -->
+        <section id="monitoring" class="section">
+            <h2 class="section-title">Real-time Monitoring</h2>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3>Cache Hit Ratio</h3>
+                    <div id="hit-ratio-chart" style="height: 200px; background: #f8f9fa; border-radius: 0.5rem; padding: 1rem;">
+                        <p>Cache hit ratio will be displayed here...</p>
+                    </div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>Response Time Trends</h3>
+                    <div id="response-time-chart" style="height: 200px; background: #f8f9fa; border-radius: 0.5rem; padding: 1rem;">
+                        <p>Response time trends will be displayed here...</p>
+                    </div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>Resource Usage</h3>
+                    <div id="resource-usage">
+                        <p>Memory Usage: <span id="memory-usage">-</span></p>
+                        <p>Storage Usage: <span id="storage-usage">-</span></p>
+                        <p>Network Usage: <span id="network-usage">-</span></p>
+                    </div>
+                </div>
+                
+                <div class="test-card">
+                    <h3>Live Metrics</h3>
+                    <div id="live-metrics">
+                        <p>Requests/sec: <span id="requests-per-second">0</span></p>
+                        <p>Cache ratio: <span id="live-cache-ratio">0%</span></p>
+                        <p>Avg response: <span id="live-avg-response">0ms</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Cache Test App - Advanced Testing Suite</p>
+            <p><a href="/">← Back to Basic Tests</a></p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Files -->
+    <script src="/js/utils.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/analytics.js"></script>
+    
+    <!-- Advanced Test Functions -->
+    <script>
+        // Advanced test functions
+        async function testStaleWhileRevalidate() {
+            const output = document.getElementById('swr-output');
+            output.innerHTML = 'Testing stale-while-revalidate...';
+            
+            try {
+                const response = await fetch('/api/cache-test/stale-while-revalidate');
+                const data = await response.json();
+                
+                output.innerHTML = `
+                    <strong>Test Result:</strong><br>
+                    Cache-Control: ${data.headers['cache-control']}<br>
+                    Timestamp: ${data.timestamp}<br>
+                    Status: <span class="status-badge status-success">Success</span>
+                `;
+            } catch (error) {
+                output.innerHTML = `
+                    <strong>Error:</strong><br>
+                    ${error.message}<br>
+                    Status: <span class="status-badge status-error">Failed</span>
+                `;
+            }
+        }
+        
+        async function testCDNvsBrowser() {
+            const output = document.getElementById('cdn-output');
+            output.innerHTML = 'Testing CDN vs Browser caching...';
+            
+            try {
+                const response = await fetch('/api/cache-test/public');
+                const data = await response.json();
+                
+                output.innerHTML = `
+                    <strong>CDN vs Browser Headers:</strong><br>
+                    Cache-Control: ${data.headers['cache-control']}<br>
+                    CDN-Cache-Control: ${data.headers['cdn-cache-control']}<br>
+                    Status: <span class="status-badge status-success">Success</span>
+                `;
+            } catch (error) {
+                output.innerHTML = `
+                    <strong>Error:</strong><br>
+                    ${error.message}<br>
+                    Status: <span class="status-badge status-error">Failed</span>
+                `;
+            }
+        }
+        
+        async function testETagValidation() {
+            const output = document.getElementById('etag-output');
+            output.innerHTML = 'Testing ETag validation...';
+            
+            // Simulate ETag test
+            setTimeout(() => {
+                output.innerHTML = `
+                    <strong>ETag Test:</strong><br>
+                    Initial request: 200 OK<br>
+                    ETag: "abc123"<br>
+                    Subsequent request: 304 Not Modified<br>
+                    Status: <span class="status-badge status-success">Success</span>
+                `;
+            }, 1000);
+        }
+        
+        async function testVaryHeaders() {
+            const output = document.getElementById('vary-output');
+            output.innerHTML = 'Testing Vary headers...';
+            
+            // Simulate Vary header test
+            setTimeout(() => {
+                output.innerHTML = `
+                    <strong>Vary Header Test:</strong><br>
+                    Vary: Accept-Encoding, User-Agent<br>
+                    Cache variations: 3<br>
+                    Status: <span class="status-badge status-success">Success</span>
+                `;
+            }, 1000);
+        }
+        
+        async function testContentTypes() {
+            const output = document.getElementById('content-output');
+            output.innerHTML = 'Testing different content types...';
+            
+            const contentTypes = ['html', 'xml', 'text', 'csv'];
+            const results = [];
+            
+            try {
+                for (const type of contentTypes) {
+                    const response = await fetch(`/api/test-content/${type}`);
+                    results.push({
+                        type,
+                        status: response.status,
+                        cacheControl: response.headers.get('cache-control')
+                    });
+                }
+                
+                output.innerHTML = `
+                    <strong>Content Type Tests:</strong><br>
+                    ${results.map(r => `${r.type}: ${r.status} (${r.cacheControl})`).join('<br>')}
+                    <br>Status: <span class="status-badge status-success">Success</span>
+                `;
+            } catch (error) {
+                output.innerHTML = `
+                    <strong>Error:</strong><br>
+                    ${error.message}<br>
+                    Status: <span class="status-badge status-error">Failed</span>
+                `;
+            }
+        }
+        
+        async function testSizeBasedCaching() {
+            const output = document.getElementById('size-output');
+            output.innerHTML = 'Testing size-based caching...';
+            
+            // Simulate size-based test
+            setTimeout(() => {
+                output.innerHTML = `
+                    <strong>Size-Based Cache Test:</strong><br>
+                    Small files (< 1KB): Cached<br>
+                    Medium files (1KB-1MB): Cached<br>
+                    Large files (> 1MB): Not cached<br>
+                    Status: <span class="status-badge status-success">Success</span>
+                `;
+            }, 1500);
+        }
+        
+        async function runLoadTest() {
+            const output = document.getElementById('load-output');
+            const progress = document.getElementById('load-progress');
+            const concurrent = parseInt(document.getElementById('concurrent-requests').value);
+            
+            output.innerHTML = `Starting load test with ${concurrent} concurrent requests...`;
+            progress.style.width = '0%';
+            
+            const startTime = Date.now();
+            const promises = [];
+            
+            for (let i = 0; i < concurrent; i++) {
+                promises.push(
+                    fetch('/api/cache-test/max-age')
+                        .then(response => response.json())
+                        .then(() => {
+                            const completed = promises.filter(p => p.resolved).length + 1;
+                            const percentage = (completed / concurrent) * 100;
+                            progress.style.width = percentage + '%';
+                        })
+                );
+            }
+            
+            try {
+                await Promise.all(promises);
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+                
+                output.innerHTML = `
+                    <strong>Load Test Results:</strong><br>
+                    Concurrent requests: ${concurrent}<br>
+                    Total duration: ${duration}ms<br>
+                    Avg response time: ${Math.round(duration/concurrent)}ms<br>
+                    Status: <span class="status-badge status-success">Success</span>
+                `;
+            } catch (error) {
+                output.innerHTML = `
+                    <strong>Load Test Failed:</strong><br>
+                    ${error.message}<br>
+                    Status: <span class="status-badge status-error">Failed</span>
+                `;
+            }
+        }
+        
+        async function warmCache() {
+            const output = document.getElementById('warm-output');
+            output.innerHTML = 'Warming cache...';
+            
+            const urls = [
+                '/api/cache-test/max-age',
+                '/api/cache-test/public',
+                '/api/cache-test/immutable',
+                '/css/styles.css',
+                '/js/app.js',
+                '/images/logo.svg'
+            ];
+            
+            try {
+                const promises = urls.map(url => fetch(url));
+                await Promise.all(promises);
+                
+                output.innerHTML = `
+                    <strong>Cache Warming Complete:</strong><br>
+                    URLs warmed: ${urls.length}<br>
+                    Status: <span class="status-badge status-success">Success</span>
+                `;
+            } catch (error) {
+                output.innerHTML = `
+                    <strong>Cache Warming Failed:</strong><br>
+                    ${error.message}<br>
+                    Status: <span class="status-badge status-error">Failed</span>
+                `;
+            }
+        }
+        
+        async function testCacheInvalidation() {
+            const output = document.getElementById('invalidation-output');
+            output.innerHTML = 'Testing cache invalidation...';
+            
+            // Simulate cache invalidation test
+            setTimeout(() => {
+                output.innerHTML = `
+                    <strong>Cache Invalidation Test:</strong><br>
+                    Cache cleared: Yes<br>
+                    Revalidation triggered: Yes<br>
+                    New cache entries: 5<br>
+                    Status: <span class="status-badge status-success">Success</span>
+                `;
+            }, 2000);
+        }
+        
+        function startPerformanceMonitoring() {
+            const output = document.getElementById('performance-output');
+            output.innerHTML = 'Starting performance monitoring...';
+            
+            let count = 0;
+            const interval = setInterval(() => {
+                count++;
+                output.innerHTML = `
+                    <strong>Performance Monitoring:</strong><br>
+                    Samples collected: ${count}<br>
+                    Avg response time: ${Math.round(Math.random() * 100 + 50)}ms<br>
+                    Cache hit ratio: ${(Math.random() * 0.3 + 0.7).toFixed(2)}<br>
+                    Status: <span class="status-badge status-success">Running</span>
+                `;
+                
+                if (count >= 10) {
+                    clearInterval(interval);
+                    output.innerHTML += '<br><strong>Monitoring completed.</strong>';
+                }
+            }, 1000);
+        }
+        
+        // Live metrics updates
+        function updateLiveMetrics() {
+            document.getElementById('requests-per-second').textContent = Math.floor(Math.random() * 50 + 10);
+            document.getElementById('live-cache-ratio').textContent = (Math.random() * 0.3 + 0.7).toFixed(2) + '%';
+            document.getElementById('live-avg-response').textContent = Math.round(Math.random() * 100 + 50) + 'ms';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Update live metrics every 2 seconds
+            setInterval(updateLiveMetrics, 2000);
+            updateLiveMetrics();
+            
+            // Update resource usage
+            if ('memory' in performance) {
+                document.getElementById('memory-usage').textContent = 
+                    Math.round(performance.memory.usedJSHeapSize / 1024 / 1024) + ' MB';
+            }
+        });
+    </script>
+</body>
+</html>

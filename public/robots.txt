@@ -1,0 +1,60 @@
+# Robots.txt for Cache Test App
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Specific directives for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+# Disallow analytics and test endpoints from being crawled
+Disallow: /api/analytics
+Disallow: /api/cache-test
+Disallow: /test-results
+Disallow: /admin
+
+# Allow static assets
+Allow: /css/
+Allow: /js/
+Allow: /images/
+Allow: /favicon.ico
+Allow: /manifest.json
+
+# Cache-related directives
+# Allow caching of static assets
+User-agent: *
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.gif$
+Allow: /*.svg$
+Allow: /*.ico$
+Allow: /*.woff$
+Allow: /*.woff2$
+Allow: /*.ttf$
+Allow: /*.eot$
+
+# Sitemap location
+Sitemap: https://your-domain.com/sitemap.xml
+
+# Additional instructions for cache testing
+# These paths are specifically for testing cache behavior
+# Real crawlers should not access these frequently
+User-agent: *
+Crawl-delay: 10
+Request-rate: 1/10s
+
+# Host directive (replace with your actual domain)
+# Host: your-cache-test-app.render.com

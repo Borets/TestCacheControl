@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cache Test App - Render & Cloudflare Testing</title>
+    <meta name="description" content="Comprehensive web service caching test application for Render and Cloudflare integration">
+    <meta name="author" content="Cache Test Team">
+    
+    <!-- Cache Control Meta Tags -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Favicon and Manifest -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- CSS Files - Test Different Caching Strategies -->
+    <link rel="stylesheet" href="/css/critical.css">
+    <link rel="stylesheet" href="/css/vendor.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="/js/utils.js" as="script">
+    <link rel="preload" href="/js/app.js" as="script">
+    <link rel="preload" href="/images/logo.svg" as="image">
+    
+    <!-- DNS Prefetch for APIs -->
+    <link rel="dns-prefetch" href="//api.example.com">
+    
+    <!-- Theme Color for Mobile -->
+    <meta name="theme-color" content="#2563eb">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Cache Test App">
+    <meta property="og:description" content="Test Render Web Service Caching with Cloudflare">
+    <meta property="og:image" content="/images/hero-bg.jpg">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Cache Test App">
+    <meta name="twitter:description" content="Test Render Web Service Caching with Cloudflare">
+    <meta name="twitter:image" content="/images/hero-bg.jpg">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <img src="/images/logo.svg" alt="Cache Test" width="200" height="80">
+                </a>
+                <nav>
+                    <ul>
+                        <li><a href="#tests">Tests</a></li>
+                        <li><a href="#analytics">Analytics</a></li>
+                        <li><a href="#results">Results</a></li>
+                        <li><a href="/test.html">Advanced Tests</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Cache Test App</h1>
+                <p>Comprehensive testing for Render's Web Service Caching with Cloudflare integration</p>
+                <div class="hero-buttons">
+                    <a href="#tests" class="btn">Start Testing</a>
+                    <a href="#analytics" class="btn btn-secondary">View Analytics</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Quick Test Section -->
+        <section id="tests" class="section">
+            <h2 class="section-title">Quick Cache Tests</h2>
+            <div class="test-container">
+                <div class="grid grid-3">
+                    <div class="card">
+                        <h3>Max-Age Cache</h3>
+                        <p>Test long-term caching with max-age directive</p>
+                        <button class="btn test-cache-btn" data-test-type="max-age">Test Max-Age</button>
+                        <div class="cache-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>No-Cache Test</h3>
+                        <p>Test no-cache directive behavior</p>
+                        <button class="btn test-cache-btn" data-test-type="no-cache">Test No-Cache</button>
+                        <div class="cache-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Public Cache</h3>
+                        <p>Test public cache directive</p>
+                        <button class="btn test-cache-btn" data-test-type="public">Test Public</button>
+                        <div class="cache-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Private Cache</h3>
+                        <p>Test private cache directive</p>
+                        <button class="btn test-cache-btn" data-test-type="private">Test Private</button>
+                        <div class="cache-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Immutable Cache</h3>
+                        <p>Test immutable cache directive</p>
+                        <button class="btn test-cache-btn" data-test-type="immutable">Test Immutable</button>
+                        <div class="cache-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Revalidate Test</h3>
+                        <p>Test must-revalidate directive</p>
+                        <button class="btn test-cache-btn" data-test-type="revalidate">Test Revalidate</button>
+                        <div class="cache-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Test Results Section -->
+        <section id="results" class="section">
+            <h2 class="section-title">Test Results</h2>
+            <div class="test-results">
+                <div class="test-item">
+                    <div class="test-name">Loading...</div>
+                    <div class="test-result pending">Pending</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analytics Section -->
+        <section id="analytics" class="section">
+            <h2 class="section-title">Performance Analytics</h2>
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3>Cache Performance</h3>
+                    <div class="cache-info">
+                        <p>Cache hit ratio: <span id="cache-hit-ratio">-</span></p>
+                        <p>Average response time: <span id="avg-response-time">-</span>ms</p>
+                        <p>Total requests: <span id="total-requests">-</span></p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Browser Information</h3>
+                    <div class="browser-info">
+                        <p>User Agent: <span id="user-agent">-</span></p>
+                        <p>Online Status: <span id="online-status">-</span></p>
+                        <p>Connection: <span id="connection-type">-</span></p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Resource Timing</h3>
+                    <div class="resource-timing">
+                        <p>DOM Content Loaded: <span id="dcl-time">-</span>ms</p>
+                        <p>Load Complete: <span id="load-time">-</span>ms</p>
+                        <p>First Paint: <span id="first-paint">-</span>ms</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>Cache Usage</h3>
+                    <div class="cache-usage">
+                        <p>Loading cache information...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Advanced Features Section -->
+        <section class="section">
+            <h2 class="section-title">Advanced Features</h2>
+            <div class="grid grid-2">
+                <div class="card">
+                    <h3>Batch Testing</h3>
+                    <p>Run multiple cache tests simultaneously</p>
+                    <button class="btn" onclick="runBatchTests()">Run Batch Tests</button>
+                </div>
+                
+                <div class="card">
+                    <h3>Export Data</h3>
+                    <p>Export test results and analytics</p>
+                    <button class="btn" onclick="exportAnalytics()">Export Analytics</button>
+                </div>
+                
+                <div class="card">
+                    <h3>Clear Cache</h3>
+                    <p>Clear all cached resources</p>
+                    <button class="btn clear-cache-btn">Clear Cache</button>
+                </div>
+                
+                <div class="card">
+                    <h3>Network Testing</h3>
+                    <p>Test network latency and performance</p>
+                    <button class="btn" onclick="testNetworkLatency()">Test Network</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Cache Test App. Built for testing Render Web Service Caching with Cloudflare.</p>
+            <p>
+                <a href="/test.html">Advanced Tests</a> | 
+                <a href="/analytics.html">Detailed Analytics</a> | 
+                <a href="https://render.com/docs" target="_blank">Render Docs</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Files -->
+    <script src="/js/utils.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/analytics.js"></script>
+    
+    <!-- Additional JavaScript for this page -->
+    <script>
+        // Page-specific functions
+        function runBatchTests() {
+            const testTypes = ['max-age', 'no-cache', 'public', 'private', 'immutable'];
+            console.log('Running batch tests...');
+            
+            testTypes.forEach(async (testType, index) => {
+                setTimeout(async () => {
+                    if (window.cacheAnalytics) {
+                        await window.cacheAnalytics.constructor.prototype.runCacheTest.call(
+                            window.cacheAnalytics, testType
+                        );
+                    }
+                }, index * 1000);
+            });
+        }
+        
+        function exportAnalytics() {
+            if (window.cacheAnalytics) {
+                window.cacheAnalytics.exportData();
+            }
+        }
+        
+        function testNetworkLatency() {
+            if (window.NetworkUtils) {
+                NetworkUtils.testLatency().then(latency => {
+                    alert(`Network latency: ${latency.toFixed(2)}ms`);
+                }).catch(error => {
+                    alert(`Network test failed: ${error.message}`);
+                });
+            }
+        }
+        
+        // Update UI with real-time data
+        function updateUI() {
+            // Update cache hit ratio
+            fetch('/api/cache-status')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('cache-hit-ratio').textContent = data.performance.cacheHitRatio || '-';
+                    document.getElementById('avg-response-time').textContent = data.performance.avgResponseTime || '-';
+                    document.getElementById('total-requests').textContent = data.requests.total || '-';
+                })
+                .catch(error => console.error('Failed to update cache status:', error));
+            
+            // Update browser info
+            document.getElementById('user-agent').textContent = navigator.userAgent.split(' ')[0] || '-';
+            document.getElementById('online-status').textContent = navigator.onLine ? 'Online' : 'Offline';
+            document.getElementById('connection-type').textContent = 
+                navigator.connection?.effectiveType || 'Unknown';
+            
+            // Update performance metrics
+            const navigation = performance.getEntriesByType('navigation')[0];
+            if (navigation) {
+                document.getElementById('dcl-time').textContent = 
+                    Math.round(navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart) || '-';
+                document.getElementById('load-time').textContent = 
+                    Math.round(navigation.loadEventEnd - navigation.loadEventStart) || '-';
+            }
+            
+            const paint = performance.getEntriesByType('paint');
+            const firstPaint = paint.find(p => p.name === 'first-paint');
+            if (firstPaint) {
+                document.getElementById('first-paint').textContent = Math.round(firstPaint.startTime) || '-';
+            }
+        }
+        
+        // Initialize UI updates
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUI();
+            
+            // Update cache usage
+            if (window.CacheUtils) {
+                CacheUtils.displayCacheUsage();
+            }
+            
+            // Update UI every 10 seconds
+            setInterval(updateUI, 10000);
+        });
+    </script>
+</body>
+</html>

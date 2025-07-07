@@ -1,0 +1,88 @@
+{
+  "name": "Cache Test App",
+  "short_name": "CacheTest",
+  "description": "A comprehensive application for testing web service caching with Render and Cloudflare",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#2563eb",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-US",
+  "categories": ["developer", "testing", "performance"],
+  "icons": [
+    {
+      "src": "/images/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/images/hero-bg.jpg",
+      "sizes": "1200x600",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Run Cache Tests",
+      "short_name": "Test Cache",
+      "url": "/test",
+      "description": "Run comprehensive cache testing"
+    },
+    {
+      "name": "View Analytics",
+      "short_name": "Analytics",
+      "url": "/analytics",
+      "description": "View cache performance analytics"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "handle_links": "preferred",
+  "protocol_handlers": [
+    {
+      "protocol": "web+cachetest",
+      "url": "/test?url=%s"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/analyze",
+      "accept": {
+        "application/json": [".json"],
+        "text/plain": [".txt", ".log"]
+      }
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "file",
+          "accept": ["text/*", "application/json"]
+        }
+      ]
+    }
+  }
+}
