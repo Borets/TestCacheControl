@@ -54,10 +54,12 @@
                 </a>
                 <nav>
                     <ul>
-                        <li><a href="#tests">Tests</a></li>
+                        <li><a href="#basic-tests">Basic Tests</a></li>
+                        <li><a href="#cloudflare-tests">Cloudflare Tests</a></li>
+                        <li><a href="#static-tests">Static Assets</a></li>
+                        <li><a href="#comprehensive-analysis">Complete Analysis</a></li>
                         <li><a href="#analytics">Analytics</a></li>
                         <li><a href="#results">Results</a></li>
-                        <li><a href="/test.html">Advanced Tests</a></li>
                     </ul>
                 </nav>
             </div>
@@ -70,8 +72,10 @@
             <div class="hero-content">
                 <h1>Cache Test App</h1>
                 <p>Comprehensive testing for Render's Web Service Caching with Cloudflare integration</p>
+                <p class="hero-subtitle">🎯 Now featuring automated comprehensive cache analysis with 30+ tests</p>
                 <div class="hero-buttons">
-                    <a href="#tests" class="btn">Start Testing</a>
+                    <a href="#comprehensive-analysis" class="btn">🚀 Complete Analysis</a>
+                    <a href="#basic-tests" class="btn">Manual Testing</a>
                     <a href="#analytics" class="btn btn-secondary">View Analytics</a>
                 </div>
             </div>
@@ -80,15 +84,25 @@
 
     <!-- Main Content -->
     <main class="container">
-        <!-- Quick Test Section -->
-        <section id="tests" class="section">
-            <h2 class="section-title">Quick Cache Tests</h2>
+        <!-- Basic Cache Tests Section -->
+        <section id="basic-tests" class="section">
+            <h2 class="section-title">Basic Cache Control Tests</h2>
             <div class="test-container">
                 <div class="grid grid-3">
                     <div class="card">
                         <h3>Max-Age Cache</h3>
                         <p>Test long-term caching with max-age directive</p>
                         <button class="btn test-cache-btn" data-test-type="max-age">Test Max-Age</button>
+                        <div class="cache-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>S-MaxAge (CDN)</h3>
+                        <p>Test CDN-specific caching (Cloudflare prioritizes this)</p>
+                        <button class="btn test-cache-btn" data-test-type="s-maxage">Test S-MaxAge</button>
                         <div class="cache-status">
                             <div class="status-indicator"></div>
                             <span>Ready</span>
@@ -144,6 +158,155 @@
                             <span>Ready</span>
                         </div>
                     </div>
+                    
+                    <div class="card">
+                        <h3>Stale While Revalidate</h3>
+                        <p>Test stale-while-revalidate directive</p>
+                        <button class="btn test-cache-btn" data-test-type="stale-while-revalidate">Test SWR</button>
+                        <div class="cache-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>ETag Validation</h3>
+                        <p>Test ETag-based conditional requests</p>
+                        <button class="btn test-cache-btn" data-test-type="etag-test">Test ETag</button>
+                        <div class="cache-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Vary Header Test</h3>
+                        <p>Test content variation with Vary header</p>
+                        <button class="btn test-cache-btn" data-test-type="vary-test">Test Vary</button>
+                        <div class="cache-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cloudflare-Specific Tests Section -->
+        <section id="cloudflare-tests" class="section">
+            <h2 class="section-title">Cloudflare-Specific Tests</h2>
+            <div class="test-container">
+                <div class="grid grid-3">
+                    <div class="card">
+                        <h3>Query String Caching</h3>
+                        <p>Test how Cloudflare handles URLs with query parameters</p>
+                        <button class="btn test-special-btn" data-test-url="/api/query-string-test">Test Without Query</button>
+                        <button class="btn test-special-btn" data-test-url="/api/query-string-test?v=123&test=true">Test With Query</button>
+                        <div class="cache-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>File Size Tests</h3>
+                        <p>Test Cloudflare's behavior with different file sizes</p>
+                        <div class="file-size-buttons">
+                            <button class="btn small test-size-btn" data-size="small">1KB</button>
+                            <button class="btn small test-size-btn" data-size="medium">100KB</button>
+                            <button class="btn small test-size-btn" data-size="large">10MB</button>
+                            <button class="btn small test-size-btn" data-size="xlarge">100MB</button>
+                        </div>
+                        <div class="cache-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Range Requests</h3>
+                        <p>Test partial content requests (important for large files/video)</p>
+                        <button class="btn test-special-btn" data-test-url="/api/range-test">Full Request</button>
+                        <button class="btn test-range-btn">Range Request</button>
+                        <div class="cache-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Compression Test</h3>
+                        <p>Test Cloudflare's compression handling</p>
+                        <button class="btn test-special-btn" data-test-url="/api/compression-test">Test Compression</button>
+                        <div class="cache-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Static Asset Tests Section -->
+        <section id="static-tests" class="section">
+            <h2 class="section-title">Static Asset Cache Tests</h2>
+            <div class="test-container">
+                <div class="grid grid-4">
+                    <div class="card">
+                        <h3>CSS Files</h3>
+                        <p>Test CSS file caching behavior</p>
+                        <div class="static-test-buttons">
+                            <button class="btn small test-static-btn" data-url="/css/styles.css">styles.css</button>
+                            <button class="btn small test-static-btn" data-url="/css/critical.css">critical.css</button>
+                            <button class="btn small test-static-btn" data-url="/css/vendor.css">vendor.css</button>
+                        </div>
+                        <div class="cache-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>JavaScript Files</h3>
+                        <p>Test JS file caching behavior</p>
+                        <div class="static-test-buttons">
+                            <button class="btn small test-static-btn" data-url="/js/app.js">app.js</button>
+                            <button class="btn small test-static-btn" data-url="/js/utils.js">utils.js</button>
+                            <button class="btn small test-static-btn" data-url="/js/analytics.js">analytics.js</button>
+                        </div>
+                        <div class="cache-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Images</h3>
+                        <p>Test image file caching behavior</p>
+                        <div class="static-test-buttons">
+                            <button class="btn small test-static-btn" data-url="/images/logo.svg">logo.svg</button>
+                            <button class="btn small test-static-btn" data-url="/images/hero-bg.jpg">hero-bg.jpg</button>
+                            <button class="btn small test-static-btn" data-url="/favicon.ico">favicon.ico</button>
+                        </div>
+                        <div class="cache-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Other Assets</h3>
+                        <p>Test other file types</p>
+                        <div class="static-test-buttons">
+                            <button class="btn small test-static-btn" data-url="/manifest.json">manifest.json</button>
+                            <button class="btn small test-static-btn" data-url="/robots.txt">robots.txt</button>
+                            <button class="btn small test-static-btn" data-url="/test-files/large-file.txt">large-file.txt</button>
+                        </div>
+                        <div class="cache-status">
+                            <div class="status-indicator"></div>
+                            <span>Ready</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -151,10 +314,15 @@
         <!-- Test Results Section -->
         <section id="results" class="section">
             <h2 class="section-title">Test Results</h2>
+            <div class="results-controls">
+                <button class="btn" onclick="clearResults()">Clear Results</button>
+                <button class="btn" onclick="exportResults()">Export Results</button>
+                <button class="btn" onclick="runAllTests()">Run All Tests</button>
+            </div>
             <div class="test-results">
                 <div class="test-item">
-                    <div class="test-name">Loading...</div>
-                    <div class="test-result pending">Pending</div>
+                    <div class="test-name">No tests run yet</div>
+                    <div class="test-result pending">Click a test button to start</div>
                 </div>
             </div>
         </section>
@@ -169,6 +337,7 @@
                         <p>Cache hit ratio: <span id="cache-hit-ratio">-</span></p>
                         <p>Average response time: <span id="avg-response-time">-</span>ms</p>
                         <p>Total requests: <span id="total-requests">-</span></p>
+                        <p>Cached requests: <span id="cached-requests">-</span></p>
                     </div>
                 </div>
                 
@@ -178,6 +347,7 @@
                         <p>User Agent: <span id="user-agent">-</span></p>
                         <p>Online Status: <span id="online-status">-</span></p>
                         <p>Connection: <span id="connection-type">-</span></p>
+                        <p>Cookies Enabled: <span id="cookies-enabled">-</span></p>
                     </div>
                 </div>
                 
@@ -187,6 +357,7 @@
                         <p>DOM Content Loaded: <span id="dcl-time">-</span>ms</p>
                         <p>Load Complete: <span id="load-time">-</span>ms</p>
                         <p>First Paint: <span id="first-paint">-</span>ms</p>
+                        <p>First Contentful Paint: <span id="first-contentful-paint">-</span>ms</p>
                     </div>
                 </div>
                 
@@ -199,33 +370,33 @@
             </div>
         </section>
 
-        <!-- Advanced Features Section -->
-        <section class="section">
-            <h2 class="section-title">Advanced Features</h2>
-            <div class="grid grid-2">
-                <div class="card">
-                    <h3>Batch Testing</h3>
-                    <p>Run multiple cache tests simultaneously</p>
-                    <button class="btn" onclick="runBatchTests()">Run Batch Tests</button>
+        <!-- Comprehensive Cache Analysis Section -->
+        <section id="comprehensive-analysis" class="section">
+            <h2 class="section-title">🎯 Comprehensive Cache Analysis</h2>
+            <div class="comprehensive-test-card">
+                <div class="comprehensive-description">
+                    <h3>Complete Caching Behavior Analysis</h3>
+                    <p>Run a comprehensive test suite that analyzes all aspects of your caching configuration:</p>
+                    <ul class="feature-list">
+                        <li>✅ All 10 basic cache control directives</li>
+                        <li>✅ Cloudflare-specific behaviors (query strings, file sizes, compression)</li>
+                        <li>✅ Static asset caching across all file types</li>
+                        <li>✅ Content type variations and edge cases</li>
+                        <li>✅ Performance analysis and recommendations</li>
+                        <li>✅ Detailed reporting with export capabilities</li>
+                    </ul>
                 </div>
                 
-                <div class="card">
-                    <h3>Export Data</h3>
-                    <p>Export test results and analytics</p>
-                    <button class="btn" onclick="exportAnalytics()">Export Analytics</button>
+                <div class="comprehensive-controls">
+                    <button class="btn btn-comprehensive" onclick="comprehensiveTester.runComprehensiveTest()">
+                        🚀 Run Comprehensive Analysis
+                    </button>
+                    <div class="test-info">
+                        <small>This will run ~30 tests and take approximately 2-3 minutes</small>
+                    </div>
                 </div>
                 
-                <div class="card">
-                    <h3>Clear Cache</h3>
-                    <p>Clear all cached resources</p>
-                    <button class="btn clear-cache-btn">Clear Cache</button>
-                </div>
-                
-                <div class="card">
-                    <h3>Network Testing</h3>
-                    <p>Test network latency and performance</p>
-                    <button class="btn" onclick="testNetworkLatency()">Test Network</button>
-                </div>
+                <div id="comprehensive-progress" class="progress-container" style="display: none;"></div>
             </div>
         </section>
     </main>
@@ -237,7 +408,9 @@
             <p>
                 <a href="/test.html">Advanced Tests</a> | 
                 <a href="/analytics.html">Detailed Analytics</a> | 
-                <a href="https://render.com/docs" target="_blank">Render Docs</a>
+                <a href="https://render.com/docs" target="_blank">Render Docs</a> |
+                <a href="/CLOUDFLARE_CACHE_TESTING.md" target="_blank">Basic Testing Guide</a> |
+                <a href="/COMPREHENSIVE_CACHE_TESTING.md" target="_blank">Comprehensive Testing Guide</a>
             </p>
         </div>
     </footer>
@@ -246,39 +419,55 @@
     <script src="/js/utils.js"></script>
     <script src="/js/app.js"></script>
     <script src="/js/analytics.js"></script>
+    <script src="/js/comprehensive-cache-tester.js"></script>
     
     <!-- Additional JavaScript for this page -->
     <script>
+        // Global test results storage
+        window.testResults = [];
+        
         // Page-specific functions
-        function runBatchTests() {
-            const testTypes = ['max-age', 'no-cache', 'public', 'private', 'immutable'];
-            console.log('Running batch tests...');
+        function runAllTests() {
+            const basicTests = ['max-age', 's-maxage', 'no-cache', 'public', 'private', 'immutable', 'revalidate', 'stale-while-revalidate', 'etag-test', 'vary-test'];
+            console.log('Running all tests...');
             
-            testTypes.forEach(async (testType, index) => {
+            basicTests.forEach(async (testType, index) => {
                 setTimeout(async () => {
-                    if (window.cacheAnalytics) {
-                        await window.cacheAnalytics.constructor.prototype.runCacheTest.call(
-                            window.cacheAnalytics, testType
-                        );
+                    if (window.cacheTestApp) {
+                        await window.cacheTestApp.runCacheTest(testType);
                     }
                 }, index * 1000);
             });
+            
+            // Run special tests
+            setTimeout(() => {
+                if (window.cacheTestApp) {
+                    window.cacheTestApp.runSpecialTest('/api/query-string-test');
+                    window.cacheTestApp.runSpecialTest('/api/compression-test');
+                }
+            }, basicTests.length * 1000);
         }
         
-        function exportAnalytics() {
-            if (window.cacheAnalytics) {
-                window.cacheAnalytics.exportData();
-            }
+        function clearResults() {
+            const testResults = document.querySelector('.test-results');
+            testResults.innerHTML = '<div class="test-item"><div class="test-name">Results cleared</div><div class="test-result pending">Click a test button to start</div></div>';
+            window.testResults = [];
         }
         
-        function testNetworkLatency() {
-            if (window.NetworkUtils) {
-                NetworkUtils.testLatency().then(latency => {
-                    alert(`Network latency: ${latency.toFixed(2)}ms`);
-                }).catch(error => {
-                    alert(`Network test failed: ${error.message}`);
-                });
-            }
+        function exportResults() {
+            const data = {
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                results: window.testResults
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cache-test-results-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
         }
         
         // Update UI with real-time data
@@ -290,6 +479,7 @@
                     document.getElementById('cache-hit-ratio').textContent = data.performance.cacheHitRatio || '-';
                     document.getElementById('avg-response-time').textContent = data.performance.avgResponseTime || '-';
                     document.getElementById('total-requests').textContent = data.requests.total || '-';
+                    document.getElementById('cached-requests').textContent = data.requests.cached || '-';
                 })
                 .catch(error => console.error('Failed to update cache status:', error));
             
@@ -298,6 +488,7 @@
             document.getElementById('online-status').textContent = navigator.onLine ? 'Online' : 'Offline';
             document.getElementById('connection-type').textContent = 
                 navigator.connection?.effectiveType || 'Unknown';
+            document.getElementById('cookies-enabled').textContent = navigator.cookieEnabled ? 'Yes' : 'No';
             
             // Update performance metrics
             const navigation = performance.getEntriesByType('navigation')[0];
@@ -310,8 +501,13 @@
             
             const paint = performance.getEntriesByType('paint');
             const firstPaint = paint.find(p => p.name === 'first-paint');
+            const firstContentfulPaint = paint.find(p => p.name === 'first-contentful-paint');
+            
             if (firstPaint) {
                 document.getElementById('first-paint').textContent = Math.round(firstPaint.startTime) || '-';
+            }
+            if (firstContentfulPaint) {
+                document.getElementById('first-contentful-paint').textContent = Math.round(firstContentfulPaint.startTime) || '-';
             }
         }
         
@@ -326,7 +522,30 @@
             
             // Update UI every 10 seconds
             setInterval(updateUI, 10000);
+            
+            // Setup comprehensive test progress tracking
+            setupComprehensiveTestProgress();
         });
+        
+        function setupComprehensiveTestProgress() {
+            // Override the updateProgress method to show/hide progress container
+            if (window.comprehensiveTester) {
+                const originalUpdateProgress = window.comprehensiveTester.updateProgress;
+                window.comprehensiveTester.updateProgress = function(message, percentage) {
+                    const progressContainer = document.getElementById('comprehensive-progress');
+                    if (progressContainer) {
+                        if (percentage === 0) {
+                            progressContainer.style.display = 'block';
+                        } else if (percentage >= 100) {
+                            setTimeout(() => {
+                                progressContainer.style.display = 'none';
+                            }, 3000); // Hide after 3 seconds when complete
+                        }
+                    }
+                    originalUpdateProgress.call(this, message, percentage);
+                };
+            }
+        }
     </script>
 </body>
 </html>

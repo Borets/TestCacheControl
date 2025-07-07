@@ -15,10 +15,38 @@ class CacheTestApp {
       this.setupUI();
     });
 
-    // Test cache buttons
+    // Basic cache test buttons
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains('test-cache-btn')) {
         this.runCacheTest(e.target.dataset.testType);
+      }
+    });
+
+    // Special test buttons (query string, compression, etc.)
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('test-special-btn')) {
+        this.runSpecialTest(e.target.dataset.testUrl);
+      }
+    });
+
+    // File size test buttons
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('test-size-btn')) {
+        this.runFileSizeTest(e.target.dataset.size);
+      }
+    });
+
+    // Static asset test buttons
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('test-static-btn')) {
+        this.runStaticAssetTest(e.target.dataset.url);
+      }
+    });
+
+    // Range request test button
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('test-range-btn')) {
+        this.runRangeRequestTest();
       }
     });
 
@@ -31,30 +59,8 @@ class CacheTestApp {
   }
 
   setupUI() {
-    this.addTestButtons();
     this.displayCacheInfo();
     this.setupRealTimeUpdates();
-  }
-
-  addTestButtons() {
-    const testContainer = document.querySelector('.test-container');
-    if (!testContainer) return;
-
-    const testTypes = [
-      { type: 'max-age', label: 'Test Max-Age Cache' },
-      { type: 'no-cache', label: 'Test No-Cache' },
-      { type: 'public', label: 'Test Public Cache' },
-      { type: 'private', label: 'Test Private Cache' },
-      { type: 'immutable', label: 'Test Immutable Cache' }
-    ];
-
-    testTypes.forEach(test => {
-      const button = document.createElement('button');
-      button.className = 'btn test-cache-btn';
-      button.dataset.testType = test.type;
-      button.textContent = test.label;
-      testContainer.appendChild(button);
-    });
   }
 
   async runCacheTest(testType) {
@@ -66,47 +72,274 @@ class CacheTestApp {
       const data = await response.json();
       const endTime = performance.now();
       
-      this.logCacheTest({
-        type: testType,
+      const result = {
+        type: `${testType} cache test`,
         url: testUrl,
         duration: endTime - startTime,
         headers: Object.fromEntries(response.headers.entries()),
-        cached: response.headers.get('x-cache') === 'HIT',
+        cached: this.determineCacheStatus(response),
         status: response.status,
-        data: data
-      });
+        data: data,
+        timestamp: new Date().toISOString()
+      };
+      
+      this.logCacheTest(result);
+      this.storeTestResult(result);
     } catch (error) {
       console.error('Cache test failed:', error);
-      this.logCacheTest({
-        type: testType,
+      const result = {
+        type: `${testType} cache test`,
         url: testUrl,
         error: error.message,
-        cached: false
-      });
+        cached: false,
+        timestamp: new Date().toISOString()
+      };
+      this.logCacheTest(result);
+      this.storeTestResult(result);
     }
+  }
+
+  async runSpecialTest(testUrl) {
+    const startTime = performance.now();
+    
+    try {
+      const response = await fetch(testUrl);
+      const data = await response.json();
+      const endTime = performance.now();
+      
+      const result = {
+        type: this.getTestTypeFromUrl(testUrl),
+        url: testUrl,
+        duration: endTime - startTime,
+        headers: Object.fromEntries(response.headers.entries()),
+        cached: this.determineCacheStatus(response),
+        status: response.status,
+        data: data,
+        timestamp: new Date().toISOString()
+      };
+      
+      this.logCacheTest(result);
+      this.storeTestResult(result);
+    } catch (error) {
+      console.error('Special test failed:', error);
+      const result = {
+        type: this.getTestTypeFromUrl(testUrl),
+        url: testUrl,
+        error: error.message,
+        cached: false,
+        timestamp: new Date().toISOString()
+      };
+      this.logCacheTest(result);
+      this.storeTestResult(result);
+    }
+  }
+
+  async runFileSizeTest(size) {
+    const testUrl = `/api/file-size-test/${size}`;
+    const startTime = performance.now();
+    
+    try {
+      const response = await fetch(testUrl);
+      const blob = await response.blob();
+      const endTime = performance.now();
+      
+      const result = {
+        type: `File size test (${size})`,
+        url: testUrl,
+        duration: endTime - startTime,
+        headers: Object.fromEntries(response.headers.entries()),
+        cached: this.determineCacheStatus(response),
+        status: response.status,
+        fileSize: blob.size,
+        timestamp: new Date().toISOString()
+      };
+      
+      this.logCacheTest(result);
+      this.storeTestResult(result);
+    } catch (error) {
+      console.error('File size test failed:', error);
+      const result = {
+        type: `File size test (${size})`,
+        url: testUrl,
+        error: error.message,
+        cached: false,
+        timestamp: new Date().toISOString()
+      };
+      this.logCacheTest(result);
+      this.storeTestResult(result);
+    }
+  }
+
+  async runStaticAssetTest(assetUrl) {
+    const startTime = performance.now();
+    
+    try {
+      const response = await fetch(assetUrl);
+      const blob = await response.blob();
+      const endTime = performance.now();
+      
+      const result = {
+        type: `Static asset test`,
+        url: assetUrl,
+        duration: endTime - startTime,
+        headers: Object.fromEntries(response.headers.entries()),
+        cached: this.determineCacheStatus(response),
+        status: response.status,
+        fileSize: blob.size,
+        contentType: response.headers.get('content-type'),
+        timestamp: new Date().toISOString()
+      };
+      
+      this.logCacheTest(result);
+      this.storeTestResult(result);
+    } catch (error) {
+      console.error('Static asset test failed:', error);
+      const result = {
+        type: `Static asset test`,
+        url: assetUrl,
+        error: error.message,
+        cached: false,
+        timestamp: new Date().toISOString()
+      };
+      this.logCacheTest(result);
+      this.storeTestResult(result);
+    }
+  }
+
+  async runRangeRequestTest() {
+    const testUrl = '/api/range-test';
+    const startTime = performance.now();
+    
+    try {
+      // Test with range header
+      const response = await fetch(testUrl, {
+        headers: {
+          'Range': 'bytes=0-1023'
+        }
+      });
+      const blob = await response.blob();
+      const endTime = performance.now();
+      
+      const result = {
+        type: 'Range request test',
+        url: testUrl,
+        duration: endTime - startTime,
+        headers: Object.fromEntries(response.headers.entries()),
+        cached: this.determineCacheStatus(response),
+        status: response.status,
+        fileSize: blob.size,
+        isPartialContent: response.status === 206,
+        timestamp: new Date().toISOString()
+      };
+      
+      this.logCacheTest(result);
+      this.storeTestResult(result);
+    } catch (error) {
+      console.error('Range request test failed:', error);
+      const result = {
+        type: 'Range request test',
+        url: testUrl,
+        error: error.message,
+        cached: false,
+        timestamp: new Date().toISOString()
+      };
+      this.logCacheTest(result);
+      this.storeTestResult(result);
+    }
+  }
+
+  determineCacheStatus(response) {
+    // Check for various cache indicators
+    const cacheControl = response.headers.get('cache-control');
+    const cfCacheStatus = response.headers.get('cf-cache-status');
+    const etag = response.headers.get('etag');
+    const lastModified = response.headers.get('last-modified');
+    
+    // Cloudflare cache status (if present)
+    if (cfCacheStatus) {
+      return cfCacheStatus === 'HIT';
+    }
+    
+    // Browser cache indicators
+    if (cacheControl && !cacheControl.includes('no-cache') && !cacheControl.includes('no-store')) {
+      return true;
+    }
+    
+    // ETag or Last-Modified presence suggests cacheable
+    if (etag || lastModified) {
+      return true;
+    }
+    
+    return false;
+  }
+
+  getTestTypeFromUrl(url) {
+    if (url.includes('query-string-test')) {
+      return 'Query string test';
+    } else if (url.includes('compression-test')) {
+      return 'Compression test';
+    } else if (url.includes('range-test')) {
+      return 'Range request test';
+    }
+    return 'Special test';
+  }
+
+  storeTestResult(result) {
+    if (!window.testResults) {
+      window.testResults = [];
+    }
+    window.testResults.push(result);
   }
 
   logCacheTest(result) {
     const testResults = document.querySelector('.test-results');
     if (!testResults) return;
 
+    // Remove "no tests" message if present
+    const noTestsItem = testResults.querySelector('.test-item .test-name');
+    if (noTestsItem && noTestsItem.textContent === 'No tests run yet') {
+      testResults.innerHTML = '';
+    }
+
     const testItem = document.createElement('div');
     testItem.className = 'test-item';
+    
+    const cacheStatus = result.cached ? 'CACHED' : 'NOT CACHED';
+    const statusClass = result.cached ? 'passed' : 'failed';
+    const duration = result.duration ? result.duration.toFixed(2) : 'N/A';
+    
     testItem.innerHTML = `
       <div class="test-info">
-        <div class="test-name">${result.type} Test</div>
+        <div class="test-name">${result.type}</div>
         <div class="test-details">
-          <span>Duration: ${result.duration?.toFixed(2)}ms</span>
+          <span>Duration: ${duration}ms</span>
           <span>Status: ${result.status || 'Error'}</span>
           <span>Cached: ${result.cached ? 'Yes' : 'No'}</span>
+          ${result.fileSize ? `<span>Size: ${this.formatBytes(result.fileSize)}</span>` : ''}
+          ${result.isPartialContent ? '<span>Partial: Yes</span>' : ''}
         </div>
+        <div class="test-url">${result.url}</div>
       </div>
-      <div class="test-result ${result.cached ? 'passed' : 'failed'}">
-        ${result.cached ? 'CACHED' : 'NOT CACHED'}
+      <div class="test-result ${statusClass}">
+        ${cacheStatus}
       </div>
     `;
 
     testResults.insertBefore(testItem, testResults.firstChild);
+    
+    // Limit to last 20 results
+    const items = testResults.querySelectorAll('.test-item');
+    if (items.length > 20) {
+      items[items.length - 1].remove();
+    }
+  }
+
+  formatBytes(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
   displayCacheInfo() {
@@ -119,13 +352,7 @@ class CacheTestApp {
       hardwareConcurrency: navigator.hardwareConcurrency || 'Unknown'
     };
 
-    const infoContainer = document.querySelector('.cache-info');
-    if (infoContainer) {
-      infoContainer.innerHTML = `
-        <h3>Browser Cache Information</h3>
-        <pre>${JSON.stringify(cacheInfo, null, 2)}</pre>
-      `;
-    }
+    console.log('Browser Cache Information:', cacheInfo);
   }
 
   setupPerformanceObserver() {
@@ -157,11 +384,12 @@ class CacheTestApp {
   }
 
   async loadCacheTests() {
+    // Pre-load basic tests
     const tests = [
       '/api/cache-test/max-age',
+      '/api/cache-test/s-maxage',
       '/api/cache-test/no-cache',
-      '/api/cache-test/public',
-      '/api/cache-test/private'
+      '/api/cache-test/public'
     ];
 
     const results = await Promise.allSettled(
@@ -276,7 +504,8 @@ class CacheUtils {
 }
 
 // Initialize the app
-const app = new CacheTestApp();
+const cacheTestApp = new CacheTestApp();
+window.cacheTestApp = cacheTestApp;
 
 // Export for testing
 if (typeof module !== 'undefined' && module.exports) {
