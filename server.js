@@ -220,37 +220,97 @@ app.get('/api/query-string-test', (req, res) => {
 // File size cache testing (Cloudflare has different behavior for large files)
 app.get('/api/file-size-test/:size', (req, res) => {
   const size = req.params.size;
-  let dataSize, cacheStrategy;
+  let dataSize, cacheStrategy, contentType, fileExtension;
   
   switch(size) {
     case 'small':
       dataSize = 1024; // 1KB
-      cacheStrategy = 'public, max-age=31536000';
+      cacheStrategy = 'public, max-age=31536000, s-maxage=31536000';
+      contentType = 'text/plain'; // Cloudflare caches text files
+      fileExtension = '.txt';
       break;
     case 'medium':
       dataSize = 1024 * 100; // 100KB
-      cacheStrategy = 'public, max-age=2592000';
+      cacheStrategy = 'public, max-age=2592000, s-maxage=2592000';
+      contentType = 'text/plain';
+      fileExtension = '.txt';
       break;
     case 'large':
       dataSize = 1024 * 1024 * 10; // 10MB
-      cacheStrategy = 'public, max-age=86400';
+      cacheStrategy = 'public, max-age=86400, s-maxage=86400';
+      contentType = 'text/plain';
+      fileExtension = '.txt';
       break;
     case 'xlarge':
       dataSize = 1024 * 1024 * 100; // 100MB - Cloudflare Enterprise limit
-      cacheStrategy = 'public, max-age=3600';
+      cacheStrategy = 'public, max-age=3600, s-maxage=3600';
+      contentType = 'text/plain';
+      fileExtension = '.txt';
       break;
     default:
       dataSize = 1024;
       cacheStrategy = 'no-cache';
+      contentType = 'application/octet-stream';
+      fileExtension = '';
   }
   
+  // Add Cloudflare-friendly headers
   res.setHeader('Cache-Control', cacheStrategy);
-  res.setHeader('Content-Type', 'application/octet-stream');
+  res.setHeader('Content-Type', contentType);
   res.setHeader('X-File-Size', dataSize);
+  res.setHeader('X-Test-Type', 'file-size-test');
   
-  // Generate dummy data of specified size
-  const dummyData = Buffer.alloc(dataSize, 'A');
+  // Add Content-Disposition to make it look like a file download
+  res.setHeader('Content-Disposition', `inline; filename="test-${size}${fileExtension}"`);
+  
+  // Add ETag for better caching
+  const etag = `"filesize-${size}-${dataSize}"`;
+  res.setHeader('ETag', etag);
+  
+  // Check if client has cached version
+  if (req.headers['if-none-match'] === etag) {
+    return res.status(304).end();
+  }
+  
+  // Generate dummy data of specified size (text content for better Cloudflare caching)
+  const dummyData = size === 'xlarge' ? 
+    Buffer.alloc(dataSize, 'X') : // Keep binary for very large files
+    'A'.repeat(dataSize); // Text for smaller files that Cloudflare will cache
+  
   res.send(dummyData);
+});
+
+// Static file size testing - These will definitely be cached by Cloudflare
+app.get('/static-files/:size', (req, res) => {
+  const size = req.params.size;
+  const filePath = path.join(__dirname, 'public', 'test-files', `test-${size}.txt`);
+  
+  // Set cache headers based on file size
+  let cacheControl;
+  switch(size) {
+    case '1kb':
+      cacheControl = 'public, max-age=31536000, s-maxage=31536000, immutable';
+      break;
+    case '100kb':
+      cacheControl = 'public, max-age=2592000, s-maxage=2592000';
+      break;
+    case '10mb':
+      cacheControl = 'public, max-age=86400, s-maxage=86400';
+      break;
+    case '100mb':
+      cacheControl = 'public, max-age=3600, s-maxage=3600';
+      break;
+    default:
+      cacheControl = 'no-cache';
+  }
+  
+  res.setHeader('Cache-Control', cacheControl);
+  res.setHeader('X-Static-File-Test', 'true');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      res.status(404).json({ error: `Test file ${size} not found` });
+    }
+  });
 });
 
 // Range request testing (important for video/large files with Cloudflare)
@@ -314,6 +374,28 @@ app.post('/api/analytics', (req, res) => {
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.json({ 
     status: 'received',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Health check endpoint for Render.com
+app.get('/health', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.status(200).json({ 
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    version: '1.0.0'
+  });
+});
+
+// Readiness check endpoint
+app.get('/ready', (req, res) => {
+  // Simple readiness check - server is ready if it can respond
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.status(200).json({ 
+    ready: true,
     timestamp: new Date().toISOString()
   });
 });

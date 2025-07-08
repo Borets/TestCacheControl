@@ -15,38 +15,10 @@ class CacheTestApp {
       this.setupUI();
     });
 
-    // Basic cache test buttons
+    // Test button clicks - unified handler for new layout
     document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('test-cache-btn')) {
-        this.runCacheTest(e.target.dataset.testType);
-      }
-    });
-
-    // Special test buttons (query string, compression, etc.)
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('test-special-btn')) {
-        this.runSpecialTest(e.target.dataset.testUrl);
-      }
-    });
-
-    // File size test buttons
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('test-size-btn')) {
-        this.runFileSizeTest(e.target.dataset.size);
-      }
-    });
-
-    // Static asset test buttons
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('test-static-btn')) {
-        this.runStaticAssetTest(e.target.dataset.url);
-      }
-    });
-
-    // Range request test button
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('test-range-btn')) {
-        this.runRangeRequestTest();
+      if (e.target.classList.contains('test-btn')) {
+        this.handleTestClick(e.target);
       }
     });
 
@@ -56,6 +28,23 @@ class CacheTestApp {
         this.clearCache();
       }
     });
+  }
+
+  handleTestClick(button) {
+    const testType = button.dataset.testType;
+    const testUrl = button.dataset.testUrl;
+    const testSize = button.dataset.testSize;
+    const testRange = button.dataset.testRange;
+
+    if (testType) {
+      this.runCacheTest(testType);
+    } else if (testUrl) {
+      this.runSpecialTest(testUrl);
+    } else if (testSize) {
+      this.runFileSizeTest(testSize);
+    } else if (testRange) {
+      this.runRangeRequestTest();
+    }
   }
 
   setupUI() {
@@ -292,46 +281,14 @@ class CacheTestApp {
   }
 
   logCacheTest(result) {
-    const testResults = document.querySelector('.test-results');
-    if (!testResults) return;
-
-    // Remove "no tests" message if present
-    const noTestsItem = testResults.querySelector('.test-item .test-name');
-    if (noTestsItem && noTestsItem.textContent === 'No tests run yet') {
-      testResults.innerHTML = '';
+    // Use the new layout's addTestResultToHistory function if available
+    if (window.addTestResultToHistory) {
+      window.addTestResultToHistory(result);
+      return;
     }
 
-    const testItem = document.createElement('div');
-    testItem.className = 'test-item';
-    
-    const cacheStatus = result.cached ? 'CACHED' : 'NOT CACHED';
-    const statusClass = result.cached ? 'passed' : 'failed';
-    const duration = result.duration ? result.duration.toFixed(2) : 'N/A';
-    
-    testItem.innerHTML = `
-      <div class="test-info">
-        <div class="test-name">${result.type}</div>
-        <div class="test-details">
-          <span>Duration: ${duration}ms</span>
-          <span>Status: ${result.status || 'Error'}</span>
-          <span>Cached: ${result.cached ? 'Yes' : 'No'}</span>
-          ${result.fileSize ? `<span>Size: ${this.formatBytes(result.fileSize)}</span>` : ''}
-          ${result.isPartialContent ? '<span>Partial: Yes</span>' : ''}
-        </div>
-        <div class="test-url">${result.url}</div>
-      </div>
-      <div class="test-result ${statusClass}">
-        ${cacheStatus}
-      </div>
-    `;
-
-    testResults.insertBefore(testItem, testResults.firstChild);
-    
-    // Limit to last 20 results
-    const items = testResults.querySelectorAll('.test-item');
-    if (items.length > 20) {
-      items[items.length - 1].remove();
-    }
+    // Fallback for older layout (shouldn't be needed but kept for safety)
+    console.log('Test result:', result);
   }
 
   formatBytes(bytes) {
@@ -506,6 +463,132 @@ class CacheUtils {
 // Initialize the app
 const cacheTestApp = new CacheTestApp();
 window.cacheTestApp = cacheTestApp;
+
+// --- New Event Listener Logic ---
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM fully loaded and parsed");
+
+    const runAllButton = document.getElementById('run-all-tests-btn');
+    const clearHistoryButton = document.getElementById('clear-history-btn');
+
+    if (runAllButton) {
+        console.log("Found 'Run All Tests' button");
+        runAllButton.addEventListener('click', () => {
+            console.log("'Run All Tests' button clicked");
+            if (window.comprehensiveTester) {
+                window.comprehensiveTester.runComprehensiveTest();
+            } else {
+                console.error("comprehensiveTester is not available on the window object.");
+            }
+        });
+    } else {
+        console.error("'Run All Tests' button not found!");
+    }
+
+    if (clearHistoryButton) {
+        console.log("Found 'Clear History' button");
+        clearHistoryButton.addEventListener('click', () => {
+            console.log("'Clear History' button clicked");
+            if (window.clearAllResults) {
+                window.clearAllResults();
+            } else {
+              // Fallback if the function isn't on window
+              const testResults = document.getElementById('test-results');
+              if(testResults) {
+                testResults.innerHTML = `
+                  <div class="empty-state">
+                      <div class="empty-icon">🧪</div>
+                      <div class="empty-title">No tests run yet</div>
+                      <div class="empty-description">Click any test button to start analyzing cache behavior</div>
+                  </div>
+                `;
+              }
+            }
+        });
+    } else {
+        console.error("'Clear History' button not found!");
+    }
+
+    // Connect the original logger to the new UI
+    if (window.cacheTestApp) {
+        const originalLogCacheTest = window.cacheTestApp.logCacheTest;
+        window.cacheTestApp.logCacheTest = function(result) {
+            addTestResultToHistory(result);
+        };
+    }
+});
+
+// Function to add results to the new UI, moved from index.html
+function addTestResultToHistory(result) {
+    const testResults = document.getElementById('test-results');
+    if (!testResults) return;
+    
+    const emptyState = testResults.querySelector('.empty-state');
+    if (emptyState) {
+        emptyState.remove();
+    }
+    
+    const resultItem = document.createElement('div');
+    resultItem.className = 'test-result-item';
+    
+    // Check nested cached property
+    const isCached = result.cached && (result.cached === true || result.cached.status === 'HIT' || result.cached.cacheable === true);
+    const statusClass = isCached ? 'cached' : 'not-cached';
+    const statusText = isCached ? 'CACHED' : 'NOT CACHED';
+    const duration = result.duration ? result.duration.toFixed(2) : 'N/A';
+    
+    resultItem.innerHTML = `
+        <div class="result-header">
+            <div class="result-title">${result.type}</div>
+            <div class="result-timestamp">${new Date(result.timestamp).toLocaleTimeString()}</div>
+        </div>
+        <div class="result-details">
+            <span class="result-url">${result.url}</span>
+            <div class="result-metrics">
+                <span class="metric">Duration: ${duration}ms</span>
+                <span class="metric">Status: ${result.status || 'Error'}</span>
+                <span class="metric status ${statusClass}">${statusText}</span>
+                ${result.fileSize ? `<span class="metric">Size: ${formatBytes(result.fileSize)}</span>` : ''}
+            </div>
+        </div>
+    `;
+    
+    testResults.insertBefore(resultItem, testResults.firstChild);
+    
+    const items = testResults.querySelectorAll('.test-result-item');
+    if (items.length > 50) {
+        items[items.length - 1].remove();
+    }
+    
+    if (window.testResults) {
+      window.testResults.unshift(result);
+      if (window.testResults.length > 50) {
+          window.testResults.pop();
+      }
+    }
+}
+
+// Utility function moved from index.html
+function formatBytes(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+window.clearAllResults = function() {
+  const testResults = document.getElementById('test-results');
+  if (!testResults) return;
+  testResults.innerHTML = `
+      <div class="empty-state">
+          <div class="empty-icon">🧪</div>
+          <div class="empty-title">No tests run yet</div>
+          <div class="empty-description">Click any test button to start analyzing cache behavior</div>
+      </div>
+  `;
+  window.testResults = [];
+}
 
 // Export for testing
 if (typeof module !== 'undefined' && module.exports) {

@@ -7,57 +7,43 @@ class ComprehensiveCacheTester {
         's-maxage', 
         'no-cache',
         'public',
-        'private',
-        'immutable',
-        'revalidate',
-        'stale-while-revalidate',
         'etag-test',
-        'vary-test'
+        'stale-while-revalidate'
       ],
       cloudflareBehaviors: [
         { type: 'query-string', tests: [
           { url: '/api/query-string-test', description: 'No query parameters' },
-          { url: '/api/query-string-test?v=123', description: 'With version parameter' },
-          { url: '/api/query-string-test?utm_source=test&v=123', description: 'Multiple parameters' }
+          { url: '/api/query-string-test?v=123', description: 'With query parameters' }
         ]},
         { type: 'file-sizes', tests: [
           { size: 'small', description: '1KB file' },
           { size: 'medium', description: '100KB file' },
-          { size: 'large', description: '10MB file' },
-          { size: 'xlarge', description: '100MB file' }
+          { size: 'large', description: '10MB file' }
         ]},
         { type: 'compression', tests: [
           { url: '/api/compression-test', description: 'Large payload compression' }
         ]},
         { type: 'range-requests', tests: [
           { url: '/api/range-test', headers: {}, description: 'Full content request' },
-          { url: '/api/range-test', headers: { 'Range': 'bytes=0-1023' }, description: 'Partial content (1KB)' },
-          { url: '/api/range-test', headers: { 'Range': 'bytes=1024-2047' }, description: 'Partial content (second KB)' }
+          { url: '/api/range-test', headers: { 'Range': 'bytes=0-1023' }, description: 'Partial content request' }
         ]}
       ],
       staticAssets: [
         { url: '/css/styles.css', type: 'CSS', description: 'Main stylesheet' },
-        { url: '/css/critical.css', type: 'CSS', description: 'Critical CSS' },
-        { url: '/css/vendor.css', type: 'CSS', description: 'Vendor CSS' },
         { url: '/js/app.js', type: 'JavaScript', description: 'Main application JS' },
-        { url: '/js/utils.js', type: 'JavaScript', description: 'Utility functions' },
-        { url: '/js/analytics.js', type: 'JavaScript', description: 'Analytics script' },
         { url: '/images/logo.svg', type: 'Image', description: 'SVG logo' },
-        { url: '/images/hero-bg.jpg', type: 'Image', description: 'Hero background' },
-        { url: '/favicon.ico', type: 'Icon', description: 'Favicon' },
-        { url: '/manifest.json', type: 'JSON', description: 'Web manifest' },
-        { url: '/robots.txt', type: 'Text', description: 'Robots.txt' }
+        { url: '/favicon.ico', type: 'Icon', description: 'Favicon' }
       ],
       contentTypes: [
-        { url: '/api/test-content/html', type: 'HTML', description: 'HTML content' },
-        { url: '/api/test-content/xml', type: 'XML', description: 'XML content' },
-        { url: '/api/test-content/text', type: 'Text', description: 'Plain text' },
-        { url: '/api/test-content/csv', type: 'CSV', description: 'CSV data' }
+        { url: '/api/test-content/html', type: 'HTML', description: 'HTML content type' },
+        { url: '/api/test-content/xml', type: 'XML', description: 'XML content type' },
+        { url: '/api/test-content/text', type: 'Text', description: 'Plain text content' },
+        { url: '/api/test-content/csv', type: 'CSV', description: 'CSV file type' }
       ],
       edgeCases: [
-        { url: '/api/cache-test/max-age?test=edge', description: 'Cache with query string' },
-        { url: '/api/cache-test/private', description: 'Private cache directive' },
-        { url: '/nonexistent-resource', description: '404 error caching', expectError: true }
+        { url: '/api/cache-test/not-found', description: '404 Not Found response', expectError: true },
+        { url: '/api/cache-test/server-error', description: '500 Server Error response', expectError: true },
+        { url: '/api/info', description: 'Server info endpoint (should not be aggressively cached)' }
       ]
     };
     
@@ -189,23 +175,23 @@ class ComprehensiveCacheTester {
     this.updateProgress('Testing different content types...', this.progress);
     this.results.detailed.contentTypes = {};
     
-    for (const contentTest of this.testSuite.contentTypes) {
-      const result = await this.runSingleTest(contentTest.url, 'Content Type', contentTest.description);
-      this.results.detailed.contentTypes[contentTest.type] = result;
+    for (const test of this.testSuite.contentTypes) {
+      const result = await this.runSingleTest(test.url, 'Content Type', test.description);
+      this.results.detailed.contentTypes[test.type] = result;
       this.incrementProgress();
-      await this.delay(400);
+      await this.delay(300);
     }
   }
 
   async testEdgeCases() {
-    this.updateProgress('Testing edge cases...', this.progress);
+    this.updateProgress('Testing edge cases and error handling...', this.progress);
     this.results.detailed.edgeCases = {};
     
-    for (const edgeCase of this.testSuite.edgeCases) {
-      const result = await this.runSingleTest(edgeCase.url, 'Edge Case', edgeCase.description, edgeCase.expectError);
-      this.results.detailed.edgeCases[edgeCase.description] = result;
+    for (const test of this.testSuite.edgeCases) {
+      const result = await this.runSingleTest(test.url, 'Edge Case', test.description, test.expectError);
+      this.results.detailed.edgeCases[test.description] = result;
       this.incrementProgress();
-      await this.delay(400);
+      await this.delay(300);
     }
   }
 
@@ -505,9 +491,11 @@ class ComprehensiveCacheTester {
     });
     
     Object.values(this.results.detailed.staticAssets || {}).forEach(r => results.push(r));
-    Object.values(this.results.detailed.contentTypes || {}).forEach(r => results.push(r));
-    Object.values(this.results.detailed.edgeCases || {}).forEach(r => results.push(r));
     
+    Object.values(this.results.detailed.contentTypes || {}).forEach(r => results.push(r));
+    
+    Object.values(this.results.detailed.edgeCases || {}).forEach(r => results.push(r));
+
     return results;
   }
 
@@ -560,7 +548,7 @@ class ComprehensiveCacheTester {
         <div class="detailed-results">
           <h4>📊 Detailed Results</h4>
           <div class="results-tabs">
-            <button class="tab-btn active" onclick="showTab('basic')">Basic Cache Controls</button>
+            <button class="tab-btn active" onclick="showTab('basic')">Essential Cache Tests</button>
             <button class="tab-btn" onclick="showTab('cloudflare')">Cloudflare Tests</button>
             <button class="tab-btn" onclick="showTab('static')">Static Assets</button>
             <button class="tab-btn" onclick="showTab('performance')">Performance</button>
@@ -596,10 +584,11 @@ class ComprehensiveCacheTester {
     container.id = 'comprehensive-results';
     container.className = 'comprehensive-results-container';
     
-    // Insert after the results section
-    const resultsSection = document.getElementById('results');
-    if (resultsSection) {
-      resultsSection.parentNode.insertBefore(container, resultsSection.nextSibling);
+    // Insert into the right panel
+    const resultsContent = document.querySelector('.right-panel .results-content');
+    if (resultsContent) {
+      resultsContent.innerHTML = ''; // Clear previous results
+      resultsContent.appendChild(container);
     } else {
       document.querySelector('main').appendChild(container);
     }
